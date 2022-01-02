@@ -1,4 +1,4 @@
-# M365 Apps for Enterprise
+# Microsoft 365 Apps for Enterprise
 
 Application package for the Microsoft 365 Apps for Enterprise suite (x64) created with the PowerShell Application Deployment Toolkit. The package does not include a local cache of installation binaries and will instead download the latest installation source binaries from the Microsoft CDN. 
 
