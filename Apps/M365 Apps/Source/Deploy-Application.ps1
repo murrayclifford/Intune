@@ -127,39 +127,39 @@ Try {
 		}
 
 		## Remove Office 2016 MSI installations
-		if(Test-Path "$envProgramFilesX86\Microsoft Office\Office16"){
+		if(Test-Path "$envProgramFilesX86\Microsoft Office\Office16\WINWORD.exe"){
 			Show-InstallationProgress "Uninstalling Microsoft Office 2016"
 			Write-Log "Microsoft Office 2016 was detected. Uninstalling..."
 			Execute-Process -FilePath "CScript.exe" -Arguments "`"$dirSupportFiles\OffScrub_O16msi.vbs`" CLIENTALL /S /Q /NoCancel" -WindowStyle Hidden -IgnoreExitCodes "1,2,3"
 		}
 
-		if(Test-Path "$envProgramFiles\Microsoft Office\Office16"){
+		if(Test-Path "$envProgramFiles\Microsoft Office\Office16\WINWORD.exe"){
 			Show-InstallationProgress "Uninstalling Microsoft Office 2016"
 			Write-Log "Microsoft Office 2016 was detected. Uninstalling..."
 			Execute-Process -FilePath "CScript.exe" -Arguments "`"$dirSupportFiles\OffScrub_O16msi.vbs`" CLIENTALL /S /Q /NoCancel" -WindowStyle Hidden -IgnoreExitCodes "1,2,3"
 		}
 
 		## Remove Office 2013  MSI installations
-		if(Test-Path "$envProgramFilesX86\Microsoft Office\Office15"){
+		if(Test-Path "$envProgramFilesX86\Microsoft Office\Office15\WINWORD.exe"){
 			Show-InstallationProgress "Uninstalling Microsoft Office 2013"
 			Write-Log "Microsoft Office 2013 was detected. Uninstalling..."
 			Execute-Process -FilePath "CScript.exe" -Arguments "`"$dirSupportFiles\OffScrub_O15msi.vbs`" CLIENTALL /S /Q /NoCancel" -WindowStyle Hidden -IgnoreExitCodes "1,2,3"
 		}
 
-		if(Test-Path "$envProgramFiles\Microsoft Office\Office15"){
+		if(Test-Path "$envProgramFiles\Microsoft Office\Office15\WINWORD.exe"){
 			Show-InstallationProgress "Uninstalling Microsoft Office 2013"
 			Write-Log "Microsoft Office 2013 was detected. Uninstalling..."
 			Execute-Process -FilePath "CScript.exe" -Arguments "`"$dirSupportFiles\OffScrub_O15msi.vbs`" CLIENTALL /S /Q /NoCancel" -WindowStyle Hidden -IgnoreExitCodes "1,2,3"
 		}
 
 		## Remove Office 2010  MSI installations
-		if(Test-Path "$envProgramFilesX86\Microsoft Office\Office14"){
+		if(Test-Path "$envProgramFilesX86\Microsoft Office\Office14\WINWORD.exe"){
 			Show-InstallationProgress "Uninstalling Microsoft Office 2010"
 			Write-Log "Microsoft Office 2010 was detected. Uninstalling..."
 			Execute-Process -FilePath "CScript.exe" -Arguments "`"$dirSupportFiles\OffScrub10.vbs`" CLIENTALL /S /Q /NoCancel" -WindowStyle Hidden -IgnoreExitCodes "1,2,3"
 		}
 
-		if(Test-Path "$envProgramFiles\Microsoft Office\Office14"){
+		if(Test-Path "$envProgramFiles\Microsoft Office\Office14\WINWORD.exe"){
 			Show-InstallationProgress "Uninstalling Microsoft Office 2010"
 			Write-Log "Microsoft Office 2010 was detected. Uninstalling..."
 			Execute-Process -FilePath "CScript.exe" -Arguments "`"$dirSupportFiles\OffScrub10.vbs`" CLIENTALL /S /Q /NoCancel" -WindowStyle Hidden -IgnoreExitCodes "1,2,3"
