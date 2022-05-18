@@ -61,15 +61,15 @@ Try {
 	##* VARIABLE DECLARATION
 	##*===============================================
 	## Variables: Application
-	[string]$appVendor = ''
-	[string]$appName = ''
-	[string]$appVersion = ''
-	[string]$appArch = ''
+	[string]$appVendor = 'Microsoft'
+	[string]$appName = 'Microsoft 365 Apps for Enterprise'
+	[string]$appVersion = 'Version 2203 (Build 15028.20248)'
+	[string]$appArch = 'x64'
 	[string]$appLang = 'EN'
 	[string]$appRevision = '01'
 	[string]$appScriptVersion = '1.0.0'
-	[string]$appScriptDate = 'XX/XX/20XX'
-	[string]$appScriptAuthor = '<author name>'
+	[string]$appScriptDate = '18/05/2022'
+	[string]$appScriptAuthor = 'Murray Clifford'
 	##*===============================================
 	## Variables: Install Titles (Only set here to override defaults set by the toolkit)
 	[string]$installName = ''
@@ -116,6 +116,19 @@ Try {
 		##*===============================================
 		[string]$installPhase = 'Pre-Installation'
 
+		## Remove Office 2010  MSI installations
+		if(Test-Path "$envProgramFilesX86\Microsoft Office\Office14"){
+			Show-InstallationProgress "Uninstalling Microsoft Office 2010"
+			Write-Log "Microsoft Office 2010 was detected. Uninstalling..."
+			Execute-Process -FilePath "CScript.exe" -Arguments "`"$dirSupportFiles\OffScrub10.vbs`" CLIENTALL /S /Q /NoCancel" -WindowStyle Hidden -IgnoreExitCodes "1,2,3"
+		}
+
+		if(Test-Path "$envProgramFiles\Microsoft Office\Office14"){
+			Show-InstallationProgress "Uninstalling Microsoft Office 2010"
+			Write-Log "Microsoft Office 2010 was detected. Uninstalling..."
+			Execute-Process -FilePath "CScript.exe" -Arguments "`"$dirSupportFiles\OffScrub10.vbs`" CLIENTALL /S /Q /NoCancel" -WindowStyle Hidden -IgnoreExitCodes "1,2,3"
+		}
+
 		## Remove Office 2013  MSI installations
 		if(Test-Path "$envProgramFilesX86\Microsoft Office\Office15"){
 			Show-InstallationProgress "Uninstalling Microsoft Office 2013"
@@ -142,6 +155,15 @@ Try {
 			Execute-Process -FilePath "CScript.exe" -Arguments "`"$dirSupportFiles\OffScrub_O16msi.vbs`" CLIENTALL /S /Q /NoCancel" -WindowStyle Hidden -IgnoreExitCodes "1,2,3"
 		}
 
+		## Remove legacy Office Click to Run installations
+		$C2RKey = (Get-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration\)
+
+		if((Test-Path $C2RKey.PSPath) -and ($C2RKey.VersionToReport -lt '16.0.15028.20248')){
+			Show-InstallationProgress "Uninstalling Microsoft Office Click to Run"
+			Write-Log "Microsoft Office Click to Run was detected, uninstalling..."
+			Execute-Process -FilePath "CScript.exe" -Arguments "`"$dirSupportFiles\OffScrubc2r.vbs`" CLIENTALL /S /Q /NoCancel" -WindowStyle Hidden -IgnoreExitCodes "1,2,3"
+		}
+
 		##*===============================================
 		##* INSTALLATION
 		##*===============================================
@@ -150,7 +172,6 @@ Try {
 		## Install Microsoft 365 Apps for Enterprise with content from the Office CDN
 		Execute-Process -Path "setup.exe" -Parameters "/configure M365_Config.xml"
 
-
 		##*===============================================
 		##* POST-INSTALLATION
 		##*===============================================
@@ -158,8 +179,6 @@ Try {
 
 		## <Perform Post-Installation tasks here>
 
-		## Display a message at the end of the install
-		If (-not $useDefaultMsi) { Show-InstallationPrompt -Message 'You can customize text to appear at the end of an install or remove it completely for unattended installations.' -ButtonRightText 'OK' -Icon Information -NoWait }
 	}
 	ElseIf ($deploymentType -ieq 'Uninstall')
 	{
