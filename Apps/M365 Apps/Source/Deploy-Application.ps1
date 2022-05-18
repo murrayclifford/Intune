@@ -116,30 +116,14 @@ Try {
 		##*===============================================
 		[string]$installPhase = 'Pre-Installation'
 
-		## Remove Office 2010  MSI installations
-		if(Test-Path "$envProgramFilesX86\Microsoft Office\Office14"){
-			Show-InstallationProgress "Uninstalling Microsoft Office 2010"
-			Write-Log "Microsoft Office 2010 was detected. Uninstalling..."
-			Execute-Process -FilePath "CScript.exe" -Arguments "`"$dirSupportFiles\OffScrub10.vbs`" CLIENTALL /S /Q /NoCancel" -WindowStyle Hidden -IgnoreExitCodes "1,2,3"
-		}
-
-		if(Test-Path "$envProgramFiles\Microsoft Office\Office14"){
-			Show-InstallationProgress "Uninstalling Microsoft Office 2010"
-			Write-Log "Microsoft Office 2010 was detected. Uninstalling..."
-			Execute-Process -FilePath "CScript.exe" -Arguments "`"$dirSupportFiles\OffScrub10.vbs`" CLIENTALL /S /Q /NoCancel" -WindowStyle Hidden -IgnoreExitCodes "1,2,3"
-		}
-
-		## Remove Office 2013  MSI installations
-		if(Test-Path "$envProgramFilesX86\Microsoft Office\Office15"){
-			Show-InstallationProgress "Uninstalling Microsoft Office 2013"
-			Write-Log "Microsoft Office 2013 was detected. Uninstalling..."
-			Execute-Process -FilePath "CScript.exe" -Arguments "`"$dirSupportFiles\OffScrub_O15msi.vbs`" CLIENTALL /S /Q /NoCancel" -WindowStyle Hidden -IgnoreExitCodes "1,2,3"
-		}
-
-		if(Test-Path "$envProgramFiles\Microsoft Office\Office15"){
-			Show-InstallationProgress "Uninstalling Microsoft Office 2013"
-			Write-Log "Microsoft Office 2013 was detected. Uninstalling..."
-			Execute-Process -FilePath "CScript.exe" -Arguments "`"$dirSupportFiles\OffScrub_O15msi.vbs`" CLIENTALL /S /Q /NoCancel" -WindowStyle Hidden -IgnoreExitCodes "1,2,3"
+		## Remove legacy Office Click to Run installations
+		$C2RKey = "HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration\"
+		if(Test-Path $C2RKey){
+			if([System.Version](Get-ItemProperty -Path $C2RKey).VersionToReport -lt [System.Version]"16.0.15028.20248"){
+				Show-InstallationProgress "Uninstalling Microsoft Office Click to Run"
+				Write-Log "Legacy Microsoft Office Click to Run was detected. Uninstalling..."
+				Execute-Process -FilePath "CScript.exe" -Arguments "`"$dirSupportFiles\OffScrubc2r.vbs`" CLIENTALL /S /Q /NoCancel" -WindowStyle Hidden -IgnoreExitCodes "1,2,3"	
+			}
 		}
 
 		## Remove Office 2016 MSI installations
@@ -155,13 +139,30 @@ Try {
 			Execute-Process -FilePath "CScript.exe" -Arguments "`"$dirSupportFiles\OffScrub_O16msi.vbs`" CLIENTALL /S /Q /NoCancel" -WindowStyle Hidden -IgnoreExitCodes "1,2,3"
 		}
 
-		## Remove legacy Office Click to Run installations
-		$C2RKey = (Get-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration\)
+		## Remove Office 2013  MSI installations
+		if(Test-Path "$envProgramFilesX86\Microsoft Office\Office15"){
+			Show-InstallationProgress "Uninstalling Microsoft Office 2013"
+			Write-Log "Microsoft Office 2013 was detected. Uninstalling..."
+			Execute-Process -FilePath "CScript.exe" -Arguments "`"$dirSupportFiles\OffScrub_O15msi.vbs`" CLIENTALL /S /Q /NoCancel" -WindowStyle Hidden -IgnoreExitCodes "1,2,3"
+		}
 
-		if((Test-Path $C2RKey.PSPath) -and ($C2RKey.VersionToReport -lt '16.0.15028.20248')){
-			Show-InstallationProgress "Uninstalling Microsoft Office Click to Run"
-			Write-Log "Microsoft Office Click to Run was detected, uninstalling..."
-			Execute-Process -FilePath "CScript.exe" -Arguments "`"$dirSupportFiles\OffScrubc2r.vbs`" CLIENTALL /S /Q /NoCancel" -WindowStyle Hidden -IgnoreExitCodes "1,2,3"
+		if(Test-Path "$envProgramFiles\Microsoft Office\Office15"){
+			Show-InstallationProgress "Uninstalling Microsoft Office 2013"
+			Write-Log "Microsoft Office 2013 was detected. Uninstalling..."
+			Execute-Process -FilePath "CScript.exe" -Arguments "`"$dirSupportFiles\OffScrub_O15msi.vbs`" CLIENTALL /S /Q /NoCancel" -WindowStyle Hidden -IgnoreExitCodes "1,2,3"
+		}
+
+		## Remove Office 2010  MSI installations
+		if(Test-Path "$envProgramFilesX86\Microsoft Office\Office14"){
+			Show-InstallationProgress "Uninstalling Microsoft Office 2010"
+			Write-Log "Microsoft Office 2010 was detected. Uninstalling..."
+			Execute-Process -FilePath "CScript.exe" -Arguments "`"$dirSupportFiles\OffScrub10.vbs`" CLIENTALL /S /Q /NoCancel" -WindowStyle Hidden -IgnoreExitCodes "1,2,3"
+		}
+
+		if(Test-Path "$envProgramFiles\Microsoft Office\Office14"){
+			Show-InstallationProgress "Uninstalling Microsoft Office 2010"
+			Write-Log "Microsoft Office 2010 was detected. Uninstalling..."
+			Execute-Process -FilePath "CScript.exe" -Arguments "`"$dirSupportFiles\OffScrub10.vbs`" CLIENTALL /S /Q /NoCancel" -WindowStyle Hidden -IgnoreExitCodes "1,2,3"
 		}
 
 		##*===============================================
