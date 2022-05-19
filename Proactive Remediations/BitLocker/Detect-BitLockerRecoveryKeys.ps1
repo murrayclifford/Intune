@@ -2,6 +2,8 @@
     .SYNOPSIS
     Checks Event Logs for issues with escrow of BitLocker recovery keys to Azure AD
 
+    Script sourced from: https://call4cloud.nl/2021/02/b-for-bitlocker/#part4
+
 #>
 
 Start-Transcript -Path "$Env:ProgramData\Microsoft\IntuneManagementExtension\Logs\Detect-BitLockerRecoveryKeys.log"
