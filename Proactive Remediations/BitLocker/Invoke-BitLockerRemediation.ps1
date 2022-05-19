@@ -3,6 +3,8 @@
     Checks current BitLocker configuration, enables or resumes BitLocker, and escrows recovery keys
     to Azure AD.
 
+    Script sourced from: https://call4cloud.nl/2021/02/b-for-bitlocker/#part4
+
 #>
 
 Start-Transcript -Path "$Env:ProgramData\Microsoft\IntuneManagementExtension\Logs\Invoke-BitLockerRemediation.log"
