@@ -1,6 +1,7 @@
 <#
     .SYNOPSIS
-
+    Script creates a scheduled task from the embedded XML. Scheduled task forces any interactive user sessions to log off
+    once the device has been idle for 10 minutes.
 #>
 
 Start-Transcript -Path C:\ProgramData\Microsoft\IntuneManagementExtension\Logs\Create-SignoutScheduledTask.log
@@ -19,9 +20,9 @@ $ScheduledTaskXml = @"
 <Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
     <Date>2022-05-30T15:35:54.4080055</Date>
-    <Author>DESKTOP-79NIEHV\Murray</Author>
-    <Description>Automatically signout all users after the device has been idle for one hour</Description>
-    <URI>\APM\Automatic Signout on Idle</URI>
+    <Author>$Author</Author>
+    <Description>$TaskDescription</Description>
+    <URI>$TaskName</URI>
   </RegistrationInfo>
   <Triggers>
     <IdleTrigger>
