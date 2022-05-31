@@ -45,7 +45,7 @@ $ScheduledTaskXml = @"
     <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
     <IdleSettings>
       <Duration>PT10M</Duration>
-      <WaitTimeout>PT0S</WaitTimeout>
+      <WaitTimeout>PT10M</WaitTimeout>
       <StopOnIdleEnd>true</StopOnIdleEnd>
       <RestartOnIdle>false</RestartOnIdle>
     </IdleSettings>
