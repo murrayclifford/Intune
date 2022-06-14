@@ -31,7 +31,7 @@ $ScheduledTaskXml = @"
   </Triggers>
   <Principals>
     <Principal id="Author">
-      <UserId>S-1-5-21-2384115879-2939452552-1597984318-1001</UserId>
+      <UserId>S-1-5-18</UserId>
       <LogonType>InteractiveToken</LogonType>
       <RunLevel>HighestAvailable</RunLevel>
     </Principal>
