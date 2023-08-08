@@ -1,6 +1,11 @@
+<#
+    .SYNOPSIS
+    Searches registry for Adobe Flash Player installations and uninstalls the application
+#>
+
 # Start Logging
-Start-Transcript -Path C:\ProgramData\Microsoft\IntuneManagementExtension\Logs\Uninstall-AdobeFlashPlayer.log
-Write-Host "Starting Adobe Flash Player removal process"
+Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\$($MyInvocation.MyCommand.Name).log" -Append
+Write-Output "Starting detection of Adobe Flash Player installations"
 
 # Gather Adobe Flash Player installation information from registry
 
@@ -10,14 +15,9 @@ $RegUninstallPaths = @(
     'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
 )
 
-# Define version of Adobe Flash Player to keep if necessary
-
-#$VersionsToKeep = @('Adobe Flash Player 32 PPAPI')
-#Write-Host "$VersionsToKeep has been whitelisted and will not be uninstalled."
-
 # Uninstall unwanted Adobe Flash Player installations
 
-$UninstallSearchFilter = {($_.GetValue('DisplayName') -like '*Adobe Flash Player*') -and ($VersionsToKeep -notcontains $_.GetValue('DisplayName'))}
+$UninstallSearchFilter = {($_.GetValue('DisplayName') -like 'Adobe Flash Player*')}
 
 foreach ($Path in $RegUninstallPaths) {
     if (Test-Path $Path) {
