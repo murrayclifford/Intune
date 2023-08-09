@@ -28,7 +28,7 @@ try{
     $BitLockerKey = (Get-BitLockerVolume -MountPoint $Env:SystemDrive).KeyProtector
     $RecoveryKey = $BitLockerKey.RecoveryPassword
     if($RecoveryKey -ne $null){
-        Write-Output "Compliant: BitLocker recovery key available $Recoverykey "
+        Write-Output "Compliant: BitLocker recovery key available $RecoveryKey"
         Stop-Transcript
         Exit 0
     }
