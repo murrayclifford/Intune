@@ -1,6 +1,6 @@
-<#
+﻿<#
     .SYNOPSIS
-    Searches registry for UltraVNC binaries
+    Searches registry for Mitel Client Component Pack registry keys
 #>
 
 # Check if PowerShell is running as a 32-bit process and restart as a 64-bit process
@@ -21,20 +21,20 @@ if (!([System.Environment]::Is64BitProcess)) {
 }
 
 # Start Logging
-Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\Detect-UltraVNC.log" -Append
-Write-Output "Starting detection of UltraVNC binaries"
+Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\Detect-MitelClientComponentKeys.log"
+Write-Output "Starting detection of Azure Information Protection registry keys"
 
-# Specify UltraVNC binary location
-$Path = "C:\Program Files (x86)\Meraki\PCC Agent 3.0.2\winvnc.exe"
+# Check for presence of Mitel installation directory
+$MitelPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{1c2068e9-1fc3-4a37-a67e-d1fdd6a332e0}"
 
 try {
-    if(Test-Path $Path){
-        Write-Output "Non Compliant: UltraVNC binaries found on device"
+    if(Test-Path $MitelPath){
+        Write-Output "Non Compliant: Mitel Client Component Pack registry keys found on device"
         Stop-Transcript
         Exit 1
     }
     else{
-        Write-Output "Compliant: UltraVNC binaries not found on device"
+        Write-Output "Compliant: Mitel Client Component Pack registry keys not found on device"
         Stop-Transcript
         Exit 0
     }

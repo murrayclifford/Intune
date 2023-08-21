@@ -1,6 +1,6 @@
-<#
+﻿<#
     .SYNOPSIS
-    Searches WMI for versions for legacy versions of Adobe Reader
+    Removes Mitel Client Component Pack registry keys from target devices
 #>
 
 # Check if PowerShell is running as a 32-bit process and restart as a 64-bit process
@@ -21,16 +21,23 @@ if (!([System.Environment]::Is64BitProcess)) {
 }
 
 # Start Logging
-Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\$($MyInvocation.MyCommand.Name).log" -Append
-Write-Output "Starting detection of orphaned Zoom registry keys"
+Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\Resolve-MitelClientComponentKeys.log"
+Write-Output "Starting removal of Mitel Client Component Pack registry keys from device"
 
-if(Get-WmiObject -Class Win32_Product -Filter "Name LIKE 'Adobe Reader%'"){
-    Write-Output "Adobe Reader detected"
-    Stop-Transcript
-    Exit 1
-}
-else{
-    Write-Output "Adobe Reader not detected"
+# Define registry keys
+$MitelPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{1c2068e9-1fc3-4a37-a67e-d1fdd6a332e0}"
+
+Try{
+    if(Test-Path $MitelPath){
+        Write-Output "Removing $MitelPath"
+        Get-Item $MitelPath | Remove-Item -Force -Recurse -Confirm:$False
+        }
     Stop-Transcript
     Exit 0
+}
+Catch{
+    $errMsg = $_.exeption.essage
+    Write-Output $errMsg
+    Stop-Transcript
+    Exit 2000
 }

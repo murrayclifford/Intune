@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-    Searches registry for Mitel MiCollab installations and uninstalls any installations found
+    Searches registry for legacy versions of Adobe Reader and performs an uninstallation
 #>
 
 # Check if PowerShell is running as a 32-bit process and restart as a 64-bit process
@@ -21,28 +21,28 @@ if (!([System.Environment]::Is64BitProcess)) {
 }
 
 # Start Logging
-Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\Resolve-OphanedMiCollabInstalls.log"
-Write-Output "Starting detection of orphaned Mitel MiCollab installations"
+Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\$($MyInvocation.MyCommand.Name).log" -Append
+Write-Output "Starting detection of legacy Adobe Reader installations"
 
-# Specify registry hives to search
-Write-Output "Specify registry hives to search"
+# Define registry uninstall paths to be searched
+Write-Output "Identifying legacy Adobe Reader installations from registry"
 $RegUninstallPaths = @(
    'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall',
     'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
 )
 
-$UninstallSearchFilter = {($_.GetValue('DisplayName') -like 'MiCollab*')}
+# Search defined registry uninstall locations and uninstall any Adobe Reader installations
+$UninstallSearchFilter = {($_.GetValue('DisplayName') -like 'Adobe Reader%')}
 
-# Loop through the specified paths and filter results based on search criteria. Uninstall any instances of the application that are found
 foreach ($Path in $RegUninstallPaths) {
     if (Test-Path $Path) {
         Get-ChildItem $Path | Where-Object $UninstallSearchFilter | 
-        foreach {
-        Write-Host "Found installation: $($_.PSChildName)"
-        $Arguments = '/X' + $($_.PSChildName) + ' /qn /l*v C:\ProgramData\Microsoft\IntuneManagementExtension\Logs\Uninstall-MiCollab' + $($_.PSChildName) +'.log'
+        ForEach-Object {
+        Write-Output "Found installation: $($_.PSChildName)"
+        $Arguments = '/X' + $($_.PSChildName) + ' /qn /l*v C:\ProgramData\Microsoft\IntuneManagementExtension\Logs\Resolve-LegacyAdobeReader' + $($_.PSChildName) +'.log'
         $Uninstall = Start-Process MSIexec.exe -ArgumentList $Arguments -Wait -NoNewWindow -PassThru
         $ReturnCode = $Uninstall.ExitCode
-        Write-Host "Return Code: $ReturnCode"
+        Write-Output "Return Code: $ReturnCode"
         }
     }
 }

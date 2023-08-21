@@ -3,8 +3,25 @@
     Searches registry for Adobe Flash Player installations and uninstalls the application
 #>
 
+# Check if PowerShell is running as a 32-bit process and restart as a 64-bit process
+if (!([System.Environment]::Is64BitProcess)) {
+    if ([System.Environment]::Is64BitOperatingSystem) {
+        Write-Output "Relaunching process as 64-bit process"
+        $Arguments = "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$($MyInvocation.MyCommand.Definition)`""
+        $ProcessPath = $(Join-Path -Path $Env:SystemRoot -ChildPath "\Sysnative\WindowsPowerShell\v1.0\powershell.exe")
+        $params = @{
+            FilePath     = $ProcessPath
+            ArgumentList = $Arguments
+            Wait         = $True
+            WindowStyle  = "Hidden"
+        }
+        Start-Process @params
+        exit 0
+    }
+}
+
 # Start Logging
-Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\$($MyInvocation.MyCommand.Name).log" -Append
+Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\Resolve-AdobeFlashPlayer.log" -Append
 Write-Output "Starting detection of Adobe Flash Player installations"
 
 # Gather Adobe Flash Player installation information from registry

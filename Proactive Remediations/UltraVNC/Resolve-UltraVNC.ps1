@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-    Searches WMI for versions for legacy versions of Adobe Reader
+    Searches registry for UltraVNC binaries
 #>
 
 # Check if PowerShell is running as a 32-bit process and restart as a 64-bit process
@@ -21,16 +21,23 @@ if (!([System.Environment]::Is64BitProcess)) {
 }
 
 # Start Logging
-Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\$($MyInvocation.MyCommand.Name).log" -Append
-Write-Output "Starting detection of orphaned Zoom registry keys"
+Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\Resolve-UltraVNC.log" -Append
+Write-Output "Starting detection of UltraVNC binaries"
 
-if(Get-WmiObject -Class Win32_Product -Filter "Name LIKE 'Adobe Reader%'"){
-    Write-Output "Adobe Reader detected"
-    Stop-Transcript
-    Exit 1
+# Specify UltraVNC binary location
+$Path = "C:\Program Files (x86)\Meraki\PCC Agent 3.0.2\winvnc.exe"
+
+try {
+    if(Test-Path $Path){
+        Write-Output "Non Compliant: UltraVNC binaries found on device. Removing"
+        Remove-Item -Path $Path -Force
+    }
 }
-else{
-    Write-Output "Adobe Reader not detected"
+catch {
+    $errMsg = $_.exeption.essage
+    Write-Output $errMsg
     Stop-Transcript
-    Exit 0
+    Exit 2000
 }
+
+Stop-Transcript

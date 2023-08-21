@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-    Searches registry for UltraVNC binaries
+    Searches device for VS Code installations in user profiles 
 #>
 
 # Check if PowerShell is running as a 32-bit process and restart as a 64-bit process
@@ -21,25 +21,30 @@ if (!([System.Environment]::Is64BitProcess)) {
 }
 
 # Start Logging
-Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\Detect-UltraVNC.log" -Append
-Write-Output "Starting detection of UltraVNC binaries"
+Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\Detect-VSCodeUserInstall.log" -Append
+Write-Output "Starting detection of VS Code user profile installations"
 
-# Specify UltraVNC binary location
-$Path = "C:\Program Files (x86)\Meraki\PCC Agent 3.0.2\winvnc.exe"
-
+# Loop through user profiles to check for VS Code installation binaries
 try {
-    if(Test-Path $Path){
-        Write-Output "Non Compliant: UltraVNC binaries found on device"
+    # Run Test and store as variable
+    $Test = Get-ChildItem -Path "C:\Users\" -Filter "code.exe" -Recurse -Force -ErrorAction SilentlyContinue
+ 
+    # Check where test is compliant or not - if no instances of VS Code are discovered then mark as 'Compliant' and exit with 0
+    if ($null -eq $Test) {
+        Write-Output "Compliant"
         Stop-Transcript
-        Exit 1
+        exit 0
     }
-    else{
-        Write-Output "Compliant: UltraVNC binaries not found on device"
+    # If instances of VS Code are discovered then mark as 'Non Compliant' and exit with 1
+    else {
+        Write-Warning "Non Compliant"
         Stop-Transcript
-        Exit 0
+        exit 1
     }
 }
+ 
 catch {
+    # Write errors messages to the log and exit
     $errMsg = $_.exeption.essage
     Write-Output $errMsg
     Stop-Transcript

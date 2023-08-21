@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-    Searches registry for Adobe Flash Player installations
+    Searches registry for Adobe Acrobat DC installations
 #>
 
 # Check if PowerShell is running as a 32-bit process and restart as a 64-bit process
@@ -21,8 +21,8 @@ if (!([System.Environment]::Is64BitProcess)) {
 }
 
 # Start Logging
-Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\Detect-AdobeFlashPlayer.log" -Append
-Write-Output "Starting detection of Adobe Flash Player installations"
+Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\Detect-AdobeAcrobatDC.log" -Append
+Write-Output "Starting detection of Adobe Acrobat DC installations"
 
 # Specify registry hives to search
 Write-Output "Specify registry hives to search"
@@ -31,18 +31,19 @@ $RegUninstallPaths = @(
     'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
 )
 
-$UninstallSearchFilter = {($_.GetValue('DisplayName') -like 'Adobe Flash Player')}
+$UninstallSearchFilter = {($_.GetValue('DisplayName') -like 'Adobe Acrobat*')}
+
 
 try {
     foreach ($Path in $RegUninstallPaths){
         Get-ChildItem -Path $Path | Where-Object $UninstallSearchFilter | 
         ForEach-Object {
-            Write-Output "Non Compliant: Adobe Flash Player found on device"
+            Write-Output "Non Compliant: Adobe Acrobat DC found on device"
             Stop-Transcript
             Exit 1
         }
     }
-    Write-Output "Compliant: Adobe Flash Player not found on device"
+    Write-Output "Compliant: Adobe Acrobat DC not found on device"
     Stop-Transcript
     Exit 0
 }

@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-    Searches registry for Mitel MiCollab installations and uninstalls any installations found
+    Uninstalls Mitel Micollab installations
 #>
 
 # Check if PowerShell is running as a 32-bit process and restart as a 64-bit process
@@ -21,25 +21,25 @@ if (!([System.Environment]::Is64BitProcess)) {
 }
 
 # Start Logging
-Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\Resolve-OphanedMiCollabInstalls.log"
-Write-Output "Starting detection of orphaned Mitel MiCollab installations"
+Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\Resolve-MitelMicollab.log" -Append
+Write-Output "Starting uninsatllation Mitel Micollab installations"
 
-# Specify registry hives to search
-Write-Output "Specify registry hives to search"
+# Set search criteria  for Mitel Micollab MSI installations
+Write-Host "Identifying Mitel Micollab installations from registry"
 $RegUninstallPaths = @(
    'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall',
     'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
 )
 
-$UninstallSearchFilter = {($_.GetValue('DisplayName') -like 'MiCollab*')}
+$UninstallSearchFilter = {($_.GetValue('DisplayName') -like 'Mitel*')}
 
-# Loop through the specified paths and filter results based on search criteria. Uninstall any instances of the application that are found
+# Uninstall any Mitel Micollab MSI installations
 foreach ($Path in $RegUninstallPaths) {
     if (Test-Path $Path) {
         Get-ChildItem $Path | Where-Object $UninstallSearchFilter | 
         foreach {
         Write-Host "Found installation: $($_.PSChildName)"
-        $Arguments = '/X' + $($_.PSChildName) + ' /qn /l*v C:\ProgramData\Microsoft\IntuneManagementExtension\Logs\Uninstall-MiCollab' + $($_.PSChildName) +'.log'
+        $Arguments = '/X' + $($_.PSChildName) + ' /qn /l*v C:\ProgramData\Microsoft\IntuneManagementExtension\Logs\Uninstall-3CX' + $($_.PSChildName) +'.log'
         $Uninstall = Start-Process MSIexec.exe -ArgumentList $Arguments -Wait -NoNewWindow -PassThru
         $ReturnCode = $Uninstall.ExitCode
         Write-Host "Return Code: $ReturnCode"

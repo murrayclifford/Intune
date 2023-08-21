@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-    Searches WMI for versions for legacy versions of Adobe Reader
+    Searches local device for Mitel installation directories
 #>
 
 # Check if PowerShell is running as a 32-bit process and restart as a 64-bit process
@@ -22,15 +22,27 @@ if (!([System.Environment]::Is64BitProcess)) {
 
 # Start Logging
 Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\$($MyInvocation.MyCommand.Name).log" -Append
-Write-Output "Starting detection of orphaned Zoom registry keys"
+Write-Output "Starting detection of Mitel installation directory"
 
-if(Get-WmiObject -Class Win32_Product -Filter "Name LIKE 'Adobe Reader%'"){
-    Write-Output "Adobe Reader detected"
-    Stop-Transcript
-    Exit 1
+# Define Mitel installation directory
+$MitelPath = "C:\Program Files (x86)\Mitel"
+
+# Check for presence of Mitel installation directory
+try {
+    if(Test-Path $MitelPath){
+        Write-Output "Non Compliant: Mitel application directory found on device"
+        Stop-Transcript
+        Exit 1
+    }
+    else{
+        Write-Output "Compliant: Mitel application directory not found on device"
+        Stop-Transcript
+        Exit 0
+    }
 }
-else{
-    Write-Output "Adobe Reader not detected"
+catch {
+    $errMsg = $_.exeption.essage
+    Write-Output $errMsg
     Stop-Transcript
-    Exit 0
+    Exit 2000
 }

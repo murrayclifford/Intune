@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-    Searches WMI for versions for legacy versions of Adobe Reader
+    Searches local device for Dell Command | Update installations
 #>
 
 # Check if PowerShell is running as a 32-bit process and restart as a 64-bit process
@@ -21,16 +21,23 @@ if (!([System.Environment]::Is64BitProcess)) {
 }
 
 # Start Logging
-Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\$($MyInvocation.MyCommand.Name).log" -Append
-Write-Output "Starting detection of orphaned Zoom registry keys"
+Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\Detect-DellCommandUpdate.log" -Append
+Write-Output "Starting detection of Dell Command | Update installation"
 
-if(Get-WmiObject -Class Win32_Product -Filter "Name LIKE 'Adobe Reader%'"){
-    Write-Output "Adobe Reader detected"
-    Stop-Transcript
+# Check for Dell Command | Update installations
+try {
+    if(Get-WmiObject -Class Win32_Product -Filter "Name like 'Dell Command | Update%'"){
+    Write-Output "Dell Command | Update detected and will now be removed"
     Exit 1
-}
+    }
 else{
-    Write-Output "Adobe Reader not detected"
-    Stop-Transcript
+    Write-Output "Dell Command | Update not detected. No action required"
     Exit 0
+    }
+}
+catch {
+    $errMsg = $_.exeption.essage
+    Write-Output $errMsg
+    Stop-Transcript
+    Exit 2000
 }
