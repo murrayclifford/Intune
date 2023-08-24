@@ -30,7 +30,7 @@ try {
     if($BitLokerInfo.EncryptionPercentage -eq '100'){
     	$BitLockerKey = (Get-BitLockerVolume -MountPoint $Env:SystemDrive).KeyProtector
     	$RecoveryKey = $BitLockerKey.RecoveryPassword
-        BackupToAAD-BitLockerKeyProtector -MountPoint "C:" -KeyProtectorId $BLV.KeyProtector[1].KeyProtectorId	
+        BackupToAAD-BitLockerKeyProtector -MountPoint "C:" -KeyProtectorId $BitLockerKey.KeyProtector[1].KeyProtectorId	
     	Write-Output "Detected: BitLocker enabled on $Env:ComputerName. BitLocker recovery key $RecoveryKey"
         Stop-Transcript
    	    Exit 0
