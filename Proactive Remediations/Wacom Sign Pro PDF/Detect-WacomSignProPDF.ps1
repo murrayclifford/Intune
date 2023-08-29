@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-    Searches registry for Cute PDF Writer 2.7 installations
+    Searches registry for Wacom Sign Pro PDF installations
 #>
 
 # Check if PowerShell is running as a 32-bit process and restart as a 64-bit process
@@ -21,8 +21,8 @@ if (!([System.Environment]::Is64BitProcess)) {
 }
 
 # Start Logging
-Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\Detect-CutePDFWriter.log" -Append
-Write-Output "Starting detection of Cute PDF Writer 2.7 installations"
+Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\Detect-3CXClient.log" -Append
+Write-Output "Starting detection of Wacom Sign Pro PDF installations"
 
 # Specify registry hives to search
 Write-Output "Specify registry hives to search"
@@ -31,19 +31,19 @@ $RegUninstallPaths = @(
     'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
 )
 
-$UninstallSearchFilter = {($_.GetValue('DisplayName') -like 'CutePDF Writer 2.7')}
+$UninstallSearchFilter = {($_.GetValue('DisplayName') -like 'Wacom sign pro PDF*')}
 
 
 try {
     foreach ($Path in $RegUninstallPaths){
         Get-ChildItem -Path $Path | Where-Object $UninstallSearchFilter | 
         ForEach-Object {
-            Write-Output "Non Compliant: Cute PDF Writer 2.7 found on device"
+            Write-Output "Non Compliant: Wacom Sign Pro PDF found on device"
             Stop-Transcript
             Exit 1
         }
     }
-    Write-Output "Compliant: Cute PDF Writer 2.7 not found on device"
+    Write-Output "Compliant: Wacom Sign Pro PDF not found on device"
     Stop-Transcript
     Exit 0
 }
