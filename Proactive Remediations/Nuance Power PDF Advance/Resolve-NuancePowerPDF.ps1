@@ -22,7 +22,7 @@ if (!([System.Environment]::Is64BitProcess)) {
 
 # Start Logging
 Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\Resolve-NuancePowerPDF.log" -Append
-Write-Output "Starting uninsatllation 3CX for Windows installations"
+Write-Output "Starting uninsatllation Nuance Power PDF Advanced installations"
 
 # Set search criteria for Nuance Power PDF Advanced installations
 Write-Host "Identifying Nuance Power PDF Advanced installations from registry"
