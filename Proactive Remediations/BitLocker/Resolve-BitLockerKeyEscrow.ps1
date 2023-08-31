@@ -38,13 +38,13 @@ try{
             Add-BitLockerKeyProtector -MountPoint "C:" -RecoveryPasswordProtector
             Write-Output "Checking BitLocker recovery key"
             $BitLockerInfo = Get-BitLockerVolume -MountPoint "C:" | Select *
-            if($BitLockerInfo.KeyProtector[1].KeyProtectorId -eq $null){
+            if($BitLockerInfo.KeyProtector[1].KeyProtectorId -ne $null){
                     Write-Output "BitLocker recovery password created, attempting to escrow BitLocker"
-                    BackupToAAD-BitLockerKeyProtector -MountPoint "C:" -KeyProtectorId $BitLockerKey.KeyProtector[1].KeyProtectorId
-                    Write-Output "BitLocker recovery key escrow to Azure AD for $Env:ComputerName"
+                    BackupToAAD-BitLockerKeyProtector -MountPoint "C:" -KeyProtectorId $BitLockerInfo.KeyProtector[1].KeyProtectorId
+                    Write-Output "BitLocker recovery key escrow to Azure AD for $env:ComputerName"
             }
             else{
-                Write-Output "BitLocker key protector missing. Check configured BitLocker key protectors on $Env:ComputerName"
+                Write-Output "BitLocker key protector missing. Check configured BitLocker key protectors on $env:ComputerName"
                 Stop-Transcript
                 Exit
             }
