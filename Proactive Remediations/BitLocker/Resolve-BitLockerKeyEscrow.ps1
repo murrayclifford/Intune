@@ -31,9 +31,29 @@ Start-Transcript -Path "$Env:ProgramData\Microsoft\IntuneManagementExtension\Log
 try{
     $BitLockerInfo = Get-BitLockerVolume -MountPoint "C:" | select *
     Write-Output "Attempt to escrow BitLocker recovery keys to Azure AD for $($env:ComputerName)"
-    BackupToAAD-BitLockerKeyProtector -MountPoint "C:" -KeyProtectorId $BitLockerInfo.KeyProtector[1].KeyProtectorId
-    # Working on method to check this programatically
-    Write-Output "Escrow of BitLocker keys initiated, review device to confirm"
+    
+    # Check if BitLocker recovery key has been created, if not, create one
+    if($BitLockerInfo.KeyProtector[1].KeyProtectorId -eq $null){
+            Write-Output "No BitLocker recovery password found on device. Adding BitLocker recovery key"
+            Add-BitLockerKeyProtector -MountPoint "C:" -RecoveryPasswordProtector
+            Write-Output "Checking BitLocker recovery key"
+            $BitLockerInfo = Get-BitLockerVolume -MountPoint "C:" | Select *
+            if($BitLockerInfo.KeyProtector[1].KeyProtectorId -eq $null){
+                    Write-Output "BitLocker recovery password created, attempting to escrow BitLocker"
+                    BackupToAAD-BitLockerKeyProtector -MountPoint "C:" -KeyProtectorId $BitLockerKey.KeyProtector[1].KeyProtectorId
+                    Write-Output "BitLocker recovery key escrow to Azure AD for $Env:ComputerName"
+            }
+            else{
+                Write-Output "BitLocker key protector missing. Check configured BitLocker key protectors on $Env:ComputerName"
+                Stop-Transcript
+                Exit
+            }
+    }
+    else{
+        # Escrow BitLocker key to AAD if present on device
+        Write-Output "BitLocker recovery key found on device, attempting to escrow to AAD"
+        BackupToAAD-BitLockerKeyProtector -MountPoint "C:" -KeyProtectorId $BitLockerKey.KeyProtector[1].KeyProtectorId
+    }
 }
 catch{
     Write-Warning "BitLocker remediation failed"
