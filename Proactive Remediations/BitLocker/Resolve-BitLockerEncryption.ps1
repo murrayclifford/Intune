@@ -59,6 +59,7 @@ try {
     if($BitLockerInfo.EncryptionPercentage -eq '0'){
         Write-Output "Detected: BitLocker disk encryption not enabled for $Env:ComputerName"
         Enable-BitLocker -MountPoint $Env:SystemDrive -EncryptionMethod XtsAes256 -TpmProtector -SkipHardwareTest
+        Add-BitLockerKeyProtector -MountPoint $Env:SystemDrive -RecoveryPasswordProtector
         $BitLockerVolume = Get-BitLockerVolume -MountPoint $Env:SystemDrive | Select *
         BackupToAAD-BitLockerKeyProtector -MountPoint $Env:SystemDrive -KeyProtectorId $BitLockerVolume.KeyProtector[1].KeyProtectorId
         Write-Output "BitLocker encryption enabled for $Env:ComputerName"
