@@ -52,7 +52,7 @@ try{
     else{
         # Escrow BitLocker key to AAD if present on device
         Write-Output "BitLocker recovery key found on device, attempting to escrow to AAD"
-        BackupToAAD-BitLockerKeyProtector -MountPoint "C:" -KeyProtectorId $BitLockerKey.KeyProtector[1].KeyProtectorId
+        BackupToAAD-BitLockerKeyProtector -MountPoint "C:" -KeyProtectorId $BitLockerInfo.KeyProtector[1].KeyProtectorId
     }
 }
 catch{
