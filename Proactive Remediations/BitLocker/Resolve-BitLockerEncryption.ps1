@@ -33,6 +33,7 @@ try {
         BackupToAAD-BitLockerKeyProtector -MountPoint "C:" -KeyProtectorId $BitLockerKey.KeyProtector[1].KeyProtectorId	
     	Write-Output "Detected: BitLocker enabled on $Env:ComputerName. BitLocker recovery key $RecoveryKey"
         Stop-Transcript
+        Write-Output "Detected: BitLocker enabled on $Env:ComputerName. BitLocker recovery key $RecoveryKey"
    	    Exit 0
     }
     # Check if BitLocker is partially encrypted and restart encryption process, usually indicative of paused or interrupted process
@@ -43,6 +44,7 @@ try {
         BackupToAAD-BitLockerKeyProtector -MountPoint $Env:SystemDrive -KeyProtectorId $BitLockerVolume.KeyProtector[1].KeyProtectorId
         Write-Output "BitLocker encryption configured on $Env:SystemDrive for $Env:ComputerName"
         Stop-Transcript
+        Write-Output "BitLocker encryption configured on $Env:SystemDrive for $Env:ComputerName"
         Exit 0
     }
     # Check whether BitLocker encryption is enabled, but protection is turned off
@@ -53,6 +55,7 @@ try {
         BackupToAAD-BitLockerKeyProtector -MountPoint $Env:SystemDrive -KeyProtectorId $BitLockerVolume.KeyProtector[1].KeyProtectorId
         Write-Output "BitLocker encryption configured on $Env:SystemDrive for $Env:ComputerName"
         Stop-Transcript
+        Write-Output "BitLocker encryption configured on $Env:SystemDrive for $Env:ComputerName"
         Exit 0
     }
     # Check if BitLocker encryption enabled for device
@@ -64,6 +67,7 @@ try {
         BackupToAAD-BitLockerKeyProtector -MountPoint $Env:SystemDrive -KeyProtectorId $BitLockerVolume.KeyProtector[1].KeyProtectorId
         Write-Output "BitLocker encryption enabled for $Env:ComputerName"
         Stop-Transcript
+        Write-Output "BitLocker encryption enabled for $Env:ComputerName"
         Exit 0
     }
 }
