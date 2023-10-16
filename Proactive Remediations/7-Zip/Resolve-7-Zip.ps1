@@ -28,6 +28,7 @@ Write-Output "Starting uninsatllation 7-Zip installations"
 $UninstallPath_x86 = "C:\Program Files (x86)\7-Zip\" 
 $UninstallPath_x64 = "C:\Program Files\7-Zip\"
 
+try{
 #region EXE installations
 
 # Check for 32-bit 7-Zip installations
@@ -63,7 +64,7 @@ if((Test-Path "$UninstallPath_x64\Uninstall.exe")){
     }
 }
 
-#endregion EXE installations
+#endregion
 
 #region MSI installations
 
@@ -88,7 +89,19 @@ foreach ($Path in $RegUninstallPaths) {
             Write-Host "Return Code: $ReturnCode"
         }
     }
+    if(Test-Path $UninstallPath_x86){
+        Write-Output "Warning: $UninstallPath_x86 found on $env:ComputerName, attempting to remove"
+        Remove-Item -Path $UninstallPath_x86 -Recurse
+    }
+    if(Test-Path $UninstallPath_x64){
+        Write-Output "Warning: $UninstallPath_x64 found on $env:ComputerName, attempting to remove"
+        Remove-Item -Path $UninstallPath_x64 -Recurse
+    }
 }
+
+#endregion
+
+#region Manual clean-up
 
 # Check for Mitel MiContact installations
 $MiContactPath = "C:\Program Files (x86)\Mitel\MiContact Centre\Services\UpdaterService\7za.exe"
@@ -98,5 +111,18 @@ if(Test-Path $MiContactPath){
     Write-Output "Found MiContact binaries on target device. Preparing to remove"
     Remove-Item $MitelPath -Recurse -Force
 }
+#endregion
 
+Write-Output "Info: Clean-up of 7-Zip completed"
 Stop-Transcript
+Write-Output "Info: Clean-up of 7-Zip completed"
+
+}
+catch{
+    Write-Warning "7-Zip clean-up failed"
+    $errMsg = $_.exception.message
+    Write-Output $errMsg
+    Stop-Transcript
+    Write-Output $errMsg
+    Exit 2000
+}
