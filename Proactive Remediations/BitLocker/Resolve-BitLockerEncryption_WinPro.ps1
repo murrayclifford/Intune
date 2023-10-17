@@ -36,7 +36,6 @@ try{
     if($BitLokerInfo.EncryptionPercentage -eq '100'){
     	$BitLockerKey = (Get-BitLockerVolume -MountPoint $Env:SystemDrive).KeyProtector
     	$RecoveryKey = $BitLockerKey.RecoveryPassword
-        Add-BitLockerKeyProtector -MountPoint $Env:SystemDrive -RecoveryPasswordProtector
         BackupToAAD-BitLockerKeyProtector -MountPoint "C:" -KeyProtectorId $BitLockerKey.KeyProtector[1].KeyProtectorId	
     	Write-Output "Detected: BitLocker enabled on $Env:ComputerName. BitLocker recovery key $RecoveryKey"
         Stop-Transcript
@@ -49,7 +48,6 @@ try{
         Write-Output "Detected: drive not fully encrypted with BitLocker. Attempting to resume encryption process"
         Resume-BitLocker -MountPoint $Env:SystemDrive
         $BitLockerVolume = Get-BitLockerVolume -MountPoint $Env:SystemDrive | select *
-        Add-BitLockerKeyProtector -MountPoint $Env:SystemDrive -RecoveryPasswordProtector
         BackupToAAD-BitLockerKeyProtector -MountPoint $Env:SystemDrive -KeyProtectorId $BitLockerVolume.KeyProtector[1].KeyProtectorId
         Write-Output "BitLocker encryption configured on $Env:SystemDrive for $Env:ComputerName"
         Stop-Transcript
@@ -62,7 +60,6 @@ try{
         Write-Output "Detected: BitLocker disk encryption not enabled for $Env:ComputerName"
         Resume-BitLocker -MountPoint "C:"
         $BitLockerVolume = Get-BitLockerVolume -MountPoint $Env:SystemDrive | select *
-        Add-BitLockerKeyProtector -MountPoint $Env:SystemDrive -RecoveryPasswordProtector
         BackupToAAD-BitLockerKeyProtector -MountPoint $Env:SystemDrive -KeyProtectorId $BitLockerVolume.KeyProtector[1].KeyProtectorId
         Write-Output "BitLocker encryption configured on $Env:SystemDrive for $Env:ComputerName"
         Stop-Transcript
@@ -71,29 +68,54 @@ try{
     }
 
     # Check if BitLocker encryption enabled for device
-    if($BitLockerInfo.EncryptionPercentage -eq '0'){
-        Write-Output "Detected: BitLocker disk encryption not enabled for $Env:ComputerName"
 
-        # Check for existing BitLocker (FVE) encryption registry keys on device
+    if ($BitLockerInfo.EncryptionPercentage -eq '0'){
+        Write-Output "Info: BitLocker encryption not enabled for $Env:ComputerSystem, attempting to enable"
+
+        # Check TPM status on device
+        $TpmStatus = Get-Tpm
+
+        # If TPM is not owned, take ownership
+        if ($TpmStatus.TpmOwnedOwned -eq 'false'){
+            Write-Output "Warn: TPM not initialised on $Env:ComputerSystem, initialising"
+            Initialize-Tpm
+            if ((Get-Tpm).TpmOwned -eq 'true'){
+                Write-Output "Info: TPM has been initialised"
+            }
+            else{
+                Write-Output "Err: TPM has not been initialised, BitLocker cannot be enabled, exiting"
+                Stop-Transcript
+                Write-Output "Err: TPM has not been initialised, BitLocker cannot be enabled, exiting"
+                Exit 2000
+            }
+        }
+
+        # Check registry for orphaned FVE keys and remove
         $RegKey = "HKLM:\Software\Policies\Microsoft\FVE"
-        Write-Output "Checking for existing BitLocker registry keys on $Env:ComputerName"
+        Write-Output "Info: Checking for existing BitLocker registry keys on $Env:ComputerName"
         if(Test-Path $RegKey){
-            Write-Output "Found existing BitLocker registry keys on $Env:ComputerName, removing"
+            Write-Output "Info: Found existing BitLocker registry keys on $Env:ComputerName, removing"
             Remove-Item -Path $RegKey -Recurse
         }
         else{
-            Write-Output "No existing BitLocker registry keys found on $Env:ComputerName"
+            Write-Output "Info: No existing BitLocker registry keys found on $Env:ComputerName"
         }
 
-        # Enable BitLocker
-        Enable-BitLocker -MountPoint $Env:SystemDrive -EncryptionMethod XtsAes256 -TpmProtector -SkipHardwareTest
-        Add-BitLockerKeyProtector -MountPoint $Env:SystemDrive -RecoveryPasswordProtector
-        $BitLockerVolume = Get-BitLockerVolume -MountPoint $Env:SystemDrive | Select *
-        BackupToAAD-BitLockerKeyProtector -MountPoint $Env:SystemDrive -KeyProtectorId $BitLockerVolume.KeyProtector[1].KeyProtectorId
-        Write-Output "BitLocker encryption enabled for $Env:ComputerName"
-        Stop-Transcript
-        Write-Output "BitLocker encryption enabled for $Env:ComputerName"
-        Exit 0
+        # Check for BitLocker RecoveryPassword Key Protector and create if missing
+        Write-Output "Info: Check for presence of RecoveryPassword BitLocker Key Protector"
+        Get-BitLockerVolume | ForEach-Object {
+            $RecoveryPassword = $_.KeyProtector | Where-Object { $_.KeyProtectorType -eq "RecoveryPassword"}
+            if ($RecoveryPassword.Count -eq 0 ){
+                Write-Output "Info: RecoveryPassword BitLocker Key Protector not found on $Env:ComputerSystem, attempting to create"
+                Add-BitLockerKeyProtector -MountPoint $Env:SystemDrive -RecoveryPasswordProtector -ErrorAction "Stop" | Out-Null
+            }
+            Write-Output "Info: Attempting to escrow BitLocker RecoveryPassword to AAD"
+            BackupToAAD-BitLockerKeyProtector -MountPoint $Env:SystemDrive -KeyProtectorId $BitLockerVolume.KeyProtector[1].KeyProtectorId
+            Write-Output "Info: BitLocker enabled for $Env:ComputerSystem"
+            Stop-Transcript
+            Write-Output "BitLocker encryption enabled for $Env:ComputerName"
+            Exit 0
+        }
     }
 }
 catch{
