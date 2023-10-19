@@ -109,13 +109,13 @@ try{
                 Write-Output "Info: RecoveryPassword BitLocker Key Protector not found on $Env:ComputerSystem, attempting to create"
                 Add-BitLockerKeyProtector -MountPoint $Env:SystemDrive -RecoveryPasswordProtector -ErrorAction "Stop" | Out-Null
             }
-            Write-Output "Info: Attempting to escrow BitLocker RecoveryPassword to AAD"
-            BackupToAAD-BitLockerKeyProtector -MountPoint $Env:SystemDrive -KeyProtectorId $BitLockerVolume.KeyProtector[1].KeyProtectorId
-            Write-Output "Info: BitLocker enabled for $Env:ComputerSystem"
-            Stop-Transcript
-            Write-Output "BitLocker encryption enabled for $Env:ComputerName"
-            Exit 0
         }
+        Write-Output "Info: Attempting to escrow BitLocker RecoveryPassword to AAD"
+        BackupToAAD-BitLockerKeyProtector -MountPoint $Env:SystemDrive -KeyProtectorId $BitLockerVolume.KeyProtector[1].KeyProtectorId
+        Write-Output "Info: BitLocker enabled for $Env:ComputerSystem"
+        Stop-Transcript
+        Write-Output "BitLocker encryption enabled for $Env:ComputerName"
+        Exit 0
     }
 }
 catch{
