@@ -22,30 +22,46 @@ if (!([System.Environment]::Is64BitProcess)) {
 
 # Start Logging
 Start-Transcript -Path "$Env:Programdata\Microsoft\IntuneManagementExtension\Logs\Resolve-VSCodeUserInstall.log" -Append
-Write-Output "Starting detection of VS Code user profile installations"
+Write-Output "Info: Starting detection of VS Code user profile installations"
 
-# Gather array of user accounts on local device
-[System.Collections.ArrayList]$UserArray = (Get-ChildItem C:\Users\).Name
-$UserArray.Remove('Public')
 
 try{
-    Foreach($User in $UserArray){
-        $Path = "$Env:SystemDrive\Users\$User\AppData\Local\Programs\Microsoft VS Code\unins000.exe"
-        if(Test-Path $Path){
-            Write-Ouput "VS Code is installed for user $User"
-            $Args = '/SILENT /NORESTART /FORCECLOSEAPPLICATIONS /log="C:\ProgramData\Microsoft\Intune Management\Logs\VSCodeUserUninstall.log'
-            Start-Process $Path -Args $Args -Wait
-            Write-Output "VS Code has been uninstalled for $User"
-        }
-        else{
-            Write-Output "VS Code not installed for user $User"
+
+    # Check whether VS Code is running on device
+    $VsCodeOpen = Get-Process -Name "Code" | Where-Object {$_.Path.StartsWith($Env:USERPROFILE)}
+    if($VsCodeOpen.Count -gt 0){
+        Write-Output "Warn: VS Code process currently running. Exiting script"
+        Stop-Transcript
+        Write-Output "Warn: VS Code process currently running. Exiting script"
+        Exit 0
+    }
+
+    if($VsCodeOpen -eq 0){
+        # Gather array of user accounts on local device
+        [System.Collections.ArrayList]$UserArray = (Get-ChildItem C:\Users\).Name
+        $UserArray.Remove('Public')
+
+        # Loop through user profiles and attempt to uninstall VS Code
+        Foreach($User in $UserArray){
+            $Path = "$Env:SystemDrive\Users\$User\AppData\Local\Programs\Microsoft VS Code\unins000.exe"
+            if(Test-Path $Path){
+                Write-Output "Info: VS Code is installed for user $User"
+                $Args = '/SILENT /NORESTART /FORCECLOSEAPPLICATIONS /log="C:\ProgramData\Microsoft\IntuneManagementExtention\Logs\VSCodeUserUninstall.log'
+                Start-Process $Path -Args $Args -Wait
+                Write-Output "Info: VS Code has been uninstalled for $User"
+            }
+            else{
+                Write-Output "Info: VS Code not installed for user $User"
+            }
         }
     }
+    Stop-Transcript
 }
 catch{
     # Write errors messages to the log and exit
     $errMsg = $_.exeption.essage
     Write-Output $errMsg
     Stop-Transcript
+    Write-Output $errMsg
     Exit 2000
 }
