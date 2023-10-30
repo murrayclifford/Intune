@@ -49,13 +49,16 @@ try{
                 $Params = '/SILENT /NORESTART /FORCECLOSEAPPLICATIONS'
                 Start-Process $Path -Args $Params -Wait
                 Write-Output "Info: VS Code has been uninstalled for $User"
+                Stop-Transcript
+                Write-Output "Info: VS Code has been uninstalled for $User"
             }
             else{
+                Write-Output "Info: VS Code not installed for user $User"
+                Stop-Transcript
                 Write-Output "Info: VS Code not installed for user $User"
             }
         }
     }
-    Stop-Transcript
 }
 catch{
     # Write errors messages to the log and exit
