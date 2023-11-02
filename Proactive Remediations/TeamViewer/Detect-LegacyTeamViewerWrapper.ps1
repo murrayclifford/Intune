@@ -31,7 +31,7 @@ $RegUninstallPaths = @(
     'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
 )
 
-$UninstallSearchFilter = {($_.GetValue('DisplayName') -like 'TeamViewer *(MSI Wrapper)')}
+$UninstallSearchFilter = {($_.GetValue('DisplayName') -like 'TeamViewer*')}
 
 try {
     foreach ($Path in $RegUninstallPaths){
