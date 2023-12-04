@@ -225,7 +225,7 @@ Try {
         [String]$installPhase = 'Uninstallation'
 
         ## Uninstall Lansweeper Agent
-        Execute-Process -Path $env:ProgramFilesX86\LansweeperAgent\uninstall.exe -Parameters '--mode unattended'
+        Execute-Process -Path $envProgramFilesX86\LansweeperAgent\uninstall.exe -Parameters '--mode unattended'
 
         ##*===============================================
         ##* POST-UNINSTALLATION
