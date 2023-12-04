@@ -195,7 +195,7 @@ Try {
         [String]$installPhase = 'Installation'
 
         ## Install Lansweeper Agent
-        Execute-Process -Path 'LsAgent-windows.ex' -Parameters '--agentkey 79e4f307-9e7d-4c01-9ab2-4f4225321191 --mode unattended' -WindowStyle 'Hidden'
+        Execute-Process -Path 'LsAgent-windows.exe' -Parameters '--agentkey 79e4f307-9e7d-4c01-9ab2-4f4225321191 --mode unattended' -WindowStyle 'Hidden'
 
         ##*===============================================
         ##* POST-INSTALLATION
