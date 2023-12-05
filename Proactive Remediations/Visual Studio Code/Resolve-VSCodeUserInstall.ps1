@@ -57,12 +57,8 @@ try{
                 $Params = '/SILENT /NORESTART /FORCECLOSEAPPLICATIONS'
                 Start-Process $Path -Args $Params -Wait
                 Write-Output "INFO: VS Code has been uninstalled for $User"
-                Stop-Transcript
-                Write-Output "INFO: VS Code has been uninstalled for $User"
             }
             else{
-                Write-Output "INFO: VS Code not installed for user $User"
-                Stop-Transcript
                 Write-Output "INFO: VS Code not installed for user $User"
             }
         }
@@ -99,7 +95,7 @@ try{
         }
     
         # Define regitry key location
-        $VSCodeKey = "Registry::HKEY_USERS\$($Profile.SID)\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{771F6B0-FA20-440A-A002-3B3BAC16DC50}_is1"
+        $VSCodeKey = "Registry::HKU\$($Profile.SID)\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{771F6B0-FA20-440A-A002-3B3BAC16DC50}_is1"
 
         # Check for registry key and remove if found
         Write-Output "INFO: Checking for $($App) registry key"
@@ -118,6 +114,9 @@ try{
     #endregion RegistryCleanup
    
     Write-Output "$($LogExit)"
+    Stop-Transcript
+    Write-Output "$($LogExit)"
+
 }
 catch{
     # Write errors messages to the log and exit
