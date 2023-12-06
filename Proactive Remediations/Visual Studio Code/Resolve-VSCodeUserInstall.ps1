@@ -95,7 +95,7 @@ try{
         }
     
         # Define regitry key location
-        $VSCodeKey = "Registry::HKU\$($Profile.SID)\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{771F6B0-FA20-440A-A002-3B3BAC16DC50}_is1"
+        $VSCodeKey = "Registry::HKU\$($Profile.SID)\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{771FD6B0-FA20-440A-A002-3B3BAC16DC50}_is1"
 
         # Check for registry key and remove if found
         Write-Output "INFO: Checking for $($App) registry key"
