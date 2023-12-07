@@ -21,7 +21,7 @@ if (!([System.Environment]::Is64BitProcess)) {
 }
 
 # Editable variables
-$App = "Visual Studio Code (User)"
+$App = "Adobe Acrobat"
 $LogPath = "$($Env:ProgramData)\Microsoft\IntuneManagementExtension\Logs"
 $LogName = "Detect-AdobeAcrobatDC"
 $LogIntro = "INFO: Starting detection of $($App)"
