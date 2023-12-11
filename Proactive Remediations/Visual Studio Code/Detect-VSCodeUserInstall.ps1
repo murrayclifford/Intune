@@ -95,16 +95,16 @@ try {
  
     # Check where test is compliant or not - if no instances of VS Code are discovered then mark as 'Compliant' and exit with 0
     if (($BinaryTest) -OR ($RegistryTest)) {
-        Write-Output "Non-compliant: $App binaries or registry keys found on $($Env:ComputerName)"
+        Write-Warning "Non-compliant: $App binaries or registry keys found on $($Env:ComputerName)"
         Stop-Transcript
-        Write-Output "Non-compliant: $App binaries or registry keys found on $($Env:ComputerName)"
+        Write-Warning "Non-compliant: $App binaries or registry keys found on $($Env:ComputerName)"
         Exit 1
     }
     # If instances of VS Code are discovered then mark as 'Non Compliant' and exit with 1
     else {
-        Write-Warning "Compliant: $App binaries or registry keys not found on $($Env:ComputerName)"
+        Write-Output "Compliant: $App binaries or registry keys not found on $($Env:ComputerName)"
         Stop-Transcript
-        Write-Warning "Compliant: $App binaries or registry keys not found on $($Env:ComputerName)"
+        Write-Output "Compliant: $App binaries or registry keys not found on $($Env:ComputerName)"
         Exit 0
     }
 }
